@@ -1,3 +1,11 @@
 
 # extra or temporary .py files
 snapfood_DS.py
+
+
+# pycache
+__pycache__/
+
+
+# json
+*.json

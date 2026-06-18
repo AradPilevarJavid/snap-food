@@ -3,7 +3,8 @@ import sqlite3
 import os
 from abc import ABC, abstractmethod
 
-STORAGE_TYPE = "json"
+
+STORAGE_TYPE = "sqlite"
 
 class Storage(ABC):
     @abstractmethod
@@ -56,6 +57,7 @@ class SQLiteStorage(Storage):
                 price REAL,
                 available INTEGER,
                 type TEXT,
+                image_path TEXT,
                 restaurant_name TEXT,
                 FOREIGN KEY (restaurant_name) REFERENCES restaurants(name)
             );
@@ -74,79 +76,112 @@ class SQLiteStorage(Storage):
                 item_type TEXT,
                 FOREIGN KEY (order_id) REFERENCES orders(id)
             );
+            CREATE TABLE IF NOT EXISTS combined_orders (
+                id INTEGER PRIMARY KEY,
+                customer_id TEXT,
+                datetime TEXT,
+                FOREIGN KEY (customer_id) REFERENCES users(id)
+            );
+            CREATE TABLE IF NOT EXISTS combined_order_items (
+                combined_order_id INTEGER,
+                item_name TEXT,
+                item_price REAL,
+                item_type TEXT,
+                restaurant_name TEXT,
+                FOREIGN KEY (combined_order_id) REFERENCES combined_orders(id)
+            );
         """)
         self.conn.commit()
 
     def load(self) -> dict:
-        data = {"users": [], "restaurants": [], "menu_items": [], "orders": []}
+        data = {"users": [], "restaurants": [], "menu_items": [],
+                "orders": [], "combined_orders": []}
+
         self.cursor.execute("SELECT * FROM users")
         for row in self.cursor.fetchall():
             data["users"].append({
-                "id": row[0],
-                "first_name": row[1],
-                "last_name": row[2],
-                "username": row[3],
-                "password": row[4],
-                "role": row[5]
+                "id": row[0], "first_name": row[1], "last_name": row[2],
+                "username": row[3], "password": row[4], "role": row[5]
             })
+
         self.cursor.execute("SELECT * FROM restaurants")
         for row in self.cursor.fetchall():
-            data["restaurants"].append({
-                "name": row[0],
-                "manager_id": row[1]
-            })
-        self.cursor.execute("SELECT name, price, available, type, restaurant_name FROM menu_items")
+            data["restaurants"].append({"name": row[0], "manager_id": row[1]})
+
+        self.cursor.execute("SELECT name, price, available, type, image_path, restaurant_name FROM menu_items")
         for row in self.cursor.fetchall():
             data["menu_items"].append({
-                "name": row[0],
-                "price": row[1],
-                "available": bool(row[2]),
-                "type": row[3],
-                "restaurant_name": row[4]
+                "name": row[0], "price": row[1], "available": bool(row[2]),
+                "type": row[3], "image_path": row[4], "restaurant_name": row[5]
             })
+
         self.cursor.execute("SELECT id, customer_id, restaurant_name, datetime FROM orders")
-        orders = {}
+        orders_dict = {}
         for row in self.cursor.fetchall():
-            order_id = row[0]
-            orders[order_id] = {
-                "id": order_id,
-                "customer_id": row[1],
-                "restaurant_name": row[2],
-                "datetime": row[3],
-                "items": []
+            orders_dict[row[0]] = {
+                "id": row[0], "customer_id": row[1], "restaurant_name": row[2],
+                "datetime": row[3], "items": []
             }
         self.cursor.execute("SELECT order_id, item_name, item_price, item_type FROM order_items")
         for row in self.cursor.fetchall():
-            orders[row[0]]["items"].append({
-                "name": row[1],
-                "price": row[2],
-                "type": row[3]
-            })
-        data["orders"] = list(orders.values())
+            if row[0] in orders_dict:
+                orders_dict[row[0]]["items"].append({
+                    "name": row[1], "price": row[2], "type": row[3]
+                })
+        data["orders"] = list(orders_dict.values())
+
+
+        self.cursor.execute("SELECT id, customer_id, datetime FROM combined_orders")
+        combined_dict = {}
+        for row in self.cursor.fetchall():
+            combined_dict[row[0]] = {
+                "id": row[0], "customer_id": row[1], "datetime": row[2], "items": []
+            }
+        self.cursor.execute("SELECT combined_order_id, item_name, item_price, item_type, restaurant_name FROM combined_order_items")
+        for row in self.cursor.fetchall():
+            if row[0] in combined_dict:
+                combined_dict[row[0]]["items"].append({
+                    "name": row[1], "price": row[2], "type": row[3],
+                    "restaurant_name": row[4]
+                })
+        data["combined_orders"] = list(combined_dict.values())
+
         return data
 
     def save(self, data: dict) -> None:
+        self.cursor.execute("DELETE FROM combined_order_items")
+        self.cursor.execute("DELETE FROM combined_orders")
         self.cursor.execute("DELETE FROM order_items")
         self.cursor.execute("DELETE FROM orders")
         self.cursor.execute("DELETE FROM menu_items")
         self.cursor.execute("DELETE FROM restaurants")
         self.cursor.execute("DELETE FROM users")
-        for user in data.get("users", []):
+
+        for u in data.get("users", []):
             self.cursor.execute("INSERT INTO users VALUES (?,?,?,?,?,?)",
-                                (user["id"], user["first_name"], user["last_name"],
-                                 user["username"], user["password"], user["role"]))
-        for rest in data.get("restaurants", []):
+                                (u["id"], u["first_name"], u["last_name"],
+                                 u["username"], u["password"], u["role"]))
+        for r in data.get("restaurants", []):
             self.cursor.execute("INSERT INTO restaurants VALUES (?,?)",
-                                (rest["name"], rest["manager_id"]))
-        for item in data.get("menu_items", []):
-            self.cursor.execute("INSERT INTO menu_items (name, price, available, type, restaurant_name) VALUES (?,?,?,?,?)",
-                                (item["name"], item["price"], int(item["available"]), item["type"], item["restaurant_name"]))
-        for order in data.get("orders", []):
+                                (r["name"], r["manager_id"]))
+        for m in data.get("menu_items", []):
+            self.cursor.execute(
+                "INSERT INTO menu_items (name, price, available, type, image_path, restaurant_name) VALUES (?,?,?,?,?,?)",
+                (m["name"], m["price"], int(m["available"]), m["type"],
+                 m.get("image_path"), m["restaurant_name"]))
+        for o in data.get("orders", []):
             self.cursor.execute("INSERT INTO orders VALUES (?,?,?,?)",
-                                (order["id"], order["customer_id"], order["restaurant_name"], order["datetime"]))
-            for oi in order["items"]:
+                                (o["id"], o["customer_id"], o["restaurant_name"], o["datetime"]))
+            for item in o["items"]:
                 self.cursor.execute("INSERT INTO order_items VALUES (?,?,?,?)",
-                                    (order["id"], oi["name"], oi["price"], oi["type"]))
+                                    (o["id"], item["name"], item["price"], item["type"]))
+        for co in data.get("combined_orders", []):
+            self.cursor.execute("INSERT INTO combined_orders VALUES (?,?,?)",
+                                (co["id"], co["customer_id"], co["datetime"]))
+            for item in co["items"]:
+                self.cursor.execute("INSERT INTO combined_order_items VALUES (?,?,?,?,?)",
+                                    (co["id"], item["name"], item["price"], item["type"],
+                                     item.get("restaurant_name", "")))
         self.conn.commit()
 
     def __del__(self):

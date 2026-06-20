@@ -57,7 +57,7 @@ class Platform:
             if restaurant:
                 restaurant.menu.append(MenuItem.from_dict(item_dict))
 
-
+        # od processes regular orders from a single restaurant
         for od in orders_data:
             items = [MenuItem.from_dict(i) for i in od["items"]]
             order = Order(od["id"], od["customer_id"], od["restaurant_name"], items, od["datetime"])
@@ -68,6 +68,7 @@ class Platform:
             self._order_counter = max(self._order_counter, order.id + 1)
 
 
+        # cod processes combined orders from multiple restaurants
         for cod in combined_orders_data:
             cart_items = []
             for item_dict in cod["items"]:
@@ -169,7 +170,7 @@ class Platform:
     def checkout_multi(self, customer):
         """
         Process the customer's cart (which may contain items from several restaurants).
-        Creates one CombinedOrder (customer‑facing) and per‑restaurant Orders.
+        Creates one CombinedOrder (customer-facing) and perestaurant Orders.
         Returns the CombinedOrder or None.
         """
         if not customer.cart:
@@ -198,6 +199,7 @@ class Platform:
         self.save()
         return combined
 
+    # getter methods at the end.
     def get_restaurants(self):
         return self.restaurants
 

@@ -3,7 +3,7 @@ import datetime
 from pathlib import Path
 
 def _try_image(path):
-    """Return a PhotoImage if PIL is available and path exists, else None."""
+    """Return a PhotoImage if PIL(Python Image Library) is available and path exists, else None."""
     try:
         from PIL import Image, ImageTk
         img = Image.open(path)
@@ -78,6 +78,7 @@ class User:
 
 class Manager(User):
     def __init__(self, user_id, first_name, last_name, username, password, restaurant):
+        # Call the User constructor, setting role to "manager" automatically.
         super().__init__(user_id, first_name, last_name, username, password, "manager")
         self.restaurant = restaurant
 
@@ -110,6 +111,7 @@ class Customer(User):
         """Create a CombinedOrder from the current cart and return it."""
         if not self.cart:
             return None
+        # Snapshot the cart before clearing it.
         items_snapshot = self.cart[:]
         combined = CombinedOrder(order_id, self.id, items_snapshot)
         self.order_history.append(combined)
@@ -124,6 +126,7 @@ class Order:
         self.customer_id = customer_id
         self.restaurant_name = restaurant_name
         self.items = items
+        # Store datetime as an ISO‑formatted string for easy serialisation.
         self.datetime = dt if dt else datetime.datetime.now().isoformat()
 
     def add_item(self, item):

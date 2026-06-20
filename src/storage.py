@@ -4,10 +4,12 @@ import os
 from abc import ABC, abstractmethod
 
 
-STORAGE_TYPE = "sqlite"
+# change the storage type to what you desire.if your type isn't accepted the program would use json by default.
+# STORAGE_TYPE = "sqlite"
+STORAGE_TYPE = 'ANYTHING'
 
 class Storage(ABC):
-    @abstractmethod
+    @abstractmethod # load must be implemented by any subclass.
     def load(self) -> dict:
         pass
 
@@ -97,6 +99,7 @@ class SQLiteStorage(Storage):
         data = {"users": [], "restaurants": [], "menu_items": [],
                 "orders": [], "combined_orders": []}
 
+        # SELECT col FROM table(dataset).
         self.cursor.execute("SELECT * FROM users")
         for row in self.cursor.fetchall():
             data["users"].append({
@@ -145,10 +148,10 @@ class SQLiteStorage(Storage):
                     "restaurant_name": row[4]
                 })
         data["combined_orders"] = list(combined_dict.values())
-
         return data
 
     def save(self, data: dict) -> None:
+        # delete all rows from the following table but keep the structure.
         self.cursor.execute("DELETE FROM combined_order_items")
         self.cursor.execute("DELETE FROM combined_orders")
         self.cursor.execute("DELETE FROM order_items")
@@ -157,8 +160,9 @@ class SQLiteStorage(Storage):
         self.cursor.execute("DELETE FROM restaurants")
         self.cursor.execute("DELETE FROM users")
 
+# Take each type of data and insert them one by one into their SQLite tables, then save everything to the database.
         for u in data.get("users", []):
-            self.cursor.execute("INSERT INTO users VALUES (?,?,?,?,?,?)",
+            self.cursor.execute("INSERT INTO users VALUES (?,?,?,?,?,?)", # parameter placeholder.
                                 (u["id"], u["first_name"], u["last_name"],
                                  u["username"], u["password"], u["role"]))
         for r in data.get("restaurants", []):

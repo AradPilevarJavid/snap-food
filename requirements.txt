@@ -1,0 +1,2 @@
+# Pillow is required for handling the images(It's optional to download it)
+Pillow

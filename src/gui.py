@@ -227,7 +227,6 @@ class App:
         frame.pack(fill="both", expand=True)
         return frame
 
-    # ---------- Login / Signup (unchanged) ----------
     def _build_login_frame(self):
         outer = ttk.Frame(self.container)
         card = ttk.Frame(outer, style="Card.TFrame", padding=40)
@@ -650,7 +649,6 @@ class App:
             customer.add_to_cart(item, restaurant.name)
             self._set_status(f"Added '{item.name}' to cart.")
             total_var.set(f"Total items in cart: {len(customer.cart)}")
-            # Refresh highlights
             cart_item_names = [i.name for i, r in customer.cart if r == restaurant.name]
             self._set_tree_alternating_colors(tree, highlight_in_cart=True, cart_items=cart_item_names)
 
@@ -735,7 +733,6 @@ class App:
             tree.insert("", "end", values=(co.id, items_desc, f"${co.total_price():.2f}", co.datetime))
         self._set_tree_alternating_colors(tree)
 
-    # ---------- Helpers ----------
     def _try_load_image(self, path):
         try:
             from PIL import Image, ImageTk

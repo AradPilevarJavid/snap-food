@@ -12,13 +12,13 @@ Light 🌙 and dark ☀️ themes, persistent storage with **JSON** or **SQLite*
 
 ## 📸 Screenshots
 
-![Login screen](login-light.png)
+![Login screen](screenshots/login-light.png)
 *Clean login window with light theme.*
 
-![Manager menu](menu_light.png)
+![Manager menu](screenshots/menu_light.png)
 *Manager's menu view grouped by category.*
 
-![Customer menu dark](user_menu_dark.png)
+![Customer menu dark](screenshots/user_menu_dark.png)
 *Customer menu with dark theme and cart highlighting.*
 
 ## 🚀 Features

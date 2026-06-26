@@ -9,17 +9,19 @@ Two roles – **Manager** 🧑‍💼 and **Customer** 👤 – with full menu m
 Light 🌙 and dark ☀️ themes, persistent storage with **JSON** or **SQLite**.
 
 ---
-
 ## 📸 Screenshots
 
-![Login screen](screenshots/login-light.png)
-*Clean login window with light theme.*
+<table>
+  <tr>
+    <td><img src="screenshots/login-light.png" width="400" alt="Login screen"><br><em>Clean login window (light theme)</em></td>
+    <td><img src="screenshots/menu_light.png" width="400" alt="Manager menu"><br><em>Manager menu (light theme)</em></td>
+  </tr>
+</table>
 
-![Manager menu](screenshots/menu_light.png)
-*Manager's menu view grouped by category.*
-
-![Customer menu dark](screenshots/user_menu_dark.png)
+<img src="screenshots/user_menu_dark.png" width="400" alt="Customer menu dark">
 *Customer menu with dark theme and cart highlighting.*
+
+---
 
 ## 🚀 Features
 

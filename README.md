@@ -18,8 +18,10 @@ Light 🌙 and dark ☀️ themes, persistent storage with **JSON** or **SQLite*
   </tr>
 </table>
 
-<img src="screenshots/user_menu_dark.png" width="400" alt="Customer menu dark"><br><em>Customer menu with dark theme and cart highlighting.</em>
-
+<div align="center">
+  <img src="screenshots/user_menu_dark.png" width="400" alt="Customer menu dark"><br>
+  <em>Customer menu with dark theme and cart highlighting.</em>
+</div>
 ---
 
 ## 🚀 Features

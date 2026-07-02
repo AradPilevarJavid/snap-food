@@ -150,7 +150,7 @@ class Order:
 
 
 class CombinedOrder:
-    """Customer‑facing order that can include items from several restaurants."""
+    """Customer-facing order that can include items from several restaurants."""
     def __init__(self, order_id, customer_id, cart_items, dt=None):
         self.id = order_id
         self.customer_id = customer_id

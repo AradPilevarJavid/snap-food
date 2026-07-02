@@ -120,7 +120,7 @@ class Customer(User):
 
 
 class Order:
-    """Single‑restaurant order (for managers' view)."""
+    """Single-restaurant order (for managers' view)."""
     def __init__(self, order_id, customer_id, restaurant_name, items, dt=None):
         self.id = order_id
         self.customer_id = customer_id

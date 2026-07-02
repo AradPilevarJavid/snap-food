@@ -10,3 +10,9 @@ images/
 # database and datafile
 *.json
 *.db
+
+# images
+*.jpg
+*.jpeg
+*.png
+

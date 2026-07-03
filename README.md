@@ -8,7 +8,8 @@ A **desktop application** for managing restaurants, built with **Python** and **
 Two roles – **Manager** 🧑‍💼 and **Customer** 👤 – with full menu management, cart, and order handling.  
 Light 🌙 and dark ☀️ themes, persistent storage with **JSON** or **SQLite**.
 
----
+
+
 ## 📸 Screenshots
 
 <table>
@@ -22,6 +23,7 @@ Light 🌙 and dark ☀️ themes, persistent storage with **JSON** or **SQLite*
   <img src="screenshots/user_menu_dark.png" width="400" alt="Customer menu dark"><br>
   <em>Customer menu with dark theme and cart highlighting.</em>
 </div>
+
 ---
 
 ## 🚀 Features
